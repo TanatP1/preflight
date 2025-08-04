@@ -1,0 +1,285 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.98 0.02 220);
+  --foreground: oklch(0.15 0.05 250);
+  --card: oklch(1 0.01 210);
+  --card-foreground: oklch(0.2 0.04 240);
+  --popover: oklch(1 0.01 210);
+  --popover-foreground: oklch(0.2 0.04 240);
+  --primary: oklch(0.55 0.18 250);
+  --primary-foreground: oklch(0.98 0.01 210);
+  --secondary: oklch(0.85 0.08 280);
+  --secondary-foreground: oklch(0.25 0.06 260);
+  --muted: oklch(0.92 0.04 240);
+  --muted-foreground: oklch(0.5 0.08 250);
+  --accent: oklch(0.75 0.15 300);
+  --accent-foreground: oklch(0.15 0.05 300);
+  --destructive: oklch(0.65 0.25 15);
+  --border: oklch(0.88 0.03 230);
+  --input: oklch(0.95 0.02 220);
+  --ring: oklch(0.55 0.18 250);
+  --chart-1: oklch(0.65 0.22 41);
+  --chart-2: oklch(0.6 0.18 185);
+  --chart-3: oklch(0.55 0.15 270);
+  --chart-4: oklch(0.7 0.2 120);
+  --chart-5: oklch(0.75 0.18 60);
+  --sidebar: oklch(0.96 0.03 240);
+  --sidebar-foreground: oklch(0.2 0.04 250);
+  --sidebar-primary: oklch(0.55 0.18 250);
+  --sidebar-primary-foreground: oklch(0.98 0.01 210);
+  --sidebar-accent: oklch(0.85 0.08 280);
+  --sidebar-accent-foreground: oklch(0.25 0.06 260);
+  --sidebar-border: oklch(0.88 0.03 230);
+  --sidebar-ring: oklch(0.55 0.18 250);
+}
+
+.dark {
+  --background: oklch(0.12 0.02 250);
+  --foreground: oklch(0.95 0.02 220);
+  --card: oklch(0.18 0.03 240);
+  --card-foreground: oklch(0.95 0.02 220);
+  --popover: oklch(0.18 0.03 240);
+  --popover-foreground: oklch(0.95 0.02 220);
+  --primary: oklch(0.7 0.2 280);
+  --primary-foreground: oklch(0.12 0.02 250);
+  --secondary: oklch(0.25 0.05 260);
+  --secondary-foreground: oklch(0.9 0.03 240);
+  --muted: oklch(0.22 0.04 250);
+  --muted-foreground: oklch(0.65 0.08 260);
+  --accent: oklch(0.45 0.15 300);
+  --accent-foreground: oklch(0.95 0.02 300);
+  --destructive: oklch(0.7 0.25 25);
+  --border: oklch(0.3 0.05 250);
+  --input: oklch(0.25 0.04 240);
+  --ring: oklch(0.7 0.2 280);
+  --chart-1: oklch(0.6 0.24 280);
+  --chart-2: oklch(0.7 0.17 180);
+  --chart-3: oklch(0.75 0.18 60);
+  --chart-4: oklch(0.65 0.25 320);
+  --chart-5: oklch(0.68 0.22 40);
+  --sidebar: oklch(0.15 0.03 250);
+  --sidebar-foreground: oklch(0.95 0.02 220);
+  --sidebar-primary: oklch(0.6 0.24 280);
+  --sidebar-primary-foreground: oklch(0.95 0.02 220);
+  --sidebar-accent: oklch(0.25 0.05 260);
+  --sidebar-accent-foreground: oklch(0.9 0.03 240);
+  --sidebar-border: oklch(0.3 0.05 250);
+  --sidebar-ring: oklch(0.7 0.2 280);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background: linear-gradient(135deg, var(--background), oklch(from var(--background) calc(l + 0.02) c h));
+  }
+}
+
+@layer components {
+  /* Button hover effects */
+  .btn, button, [role="button"], .cursor-pointer {
+    @apply cursor-pointer transition-all duration-200 ease-in-out;
+  }
+  
+  .btn:hover, button:hover, [role="button"]:hover {
+    @apply scale-105 shadow-lg;
+    cursor: pointer;
+  }
+  
+  /* Card hover effects */
+  .card, [data-component="card"] {
+    @apply transition-all duration-300 ease-out cursor-pointer;
+    background: linear-gradient(135deg, var(--card), oklch(from var(--card) calc(l + 0.01) c h));
+  }
+  
+  .card:hover, [data-component="card"]:hover {
+    @apply shadow-xl scale-[1.02];
+    background: linear-gradient(135deg, oklch(from var(--card) calc(l + 0.02) c h), var(--card));
+    cursor: pointer;
+  }
+  
+  /* Interactive elements */
+  .interactive, input, textarea, select {
+    @apply transition-all duration-200 ease-in-out;
+    cursor: text;
+  }
+  
+  input:hover, textarea:hover, select:hover {
+    @apply ring-2 ring-primary/20 shadow-md;
+    cursor: text;
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    @apply ring-2 ring-primary shadow-lg;
+    cursor: text;
+  }
+  
+  /* Link effects */
+  a, .link {
+    @apply cursor-pointer transition-all duration-200 ease-in-out;
+    color: var(--primary);
+  }
+  
+  a:hover, .link:hover {
+    @apply underline decoration-2 underline-offset-4;
+    color: oklch(from var(--primary) calc(l + 0.1) c h);
+    cursor: pointer;
+  }
+  
+  /* Drag and drop areas */
+  .dropzone, [data-dropzone] {
+    @apply transition-all duration-200 ease-in-out;
+    cursor: copy;
+    border: 2px dashed var(--border);
+  }
+  
+  .dropzone:hover, [data-dropzone]:hover {
+    border-color: var(--primary);
+    background: oklch(from var(--primary) l c h / 0.05);
+    cursor: copy;
+  }
+  
+  /* Resize handles */
+  .resize-handle, [data-resize] {
+    cursor: nw-resize;
+  }
+  
+  /* Loading states */
+  .loading, [data-loading="true"] {
+    cursor: wait;
+  }
+  
+  /* Disabled states */
+  .disabled, [disabled], [aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  /* Priority indicators */
+  .priority-low {
+    @apply border-l-4 border-l-green-400;
+    background: linear-gradient(90deg, oklch(0.9 0.05 140) 0%, var(--card) 10%);
+  }
+  
+  .priority-medium {
+    @apply border-l-4 border-l-yellow-400;
+    background: linear-gradient(90deg, oklch(0.9 0.08 80) 0%, var(--card) 10%);
+  }
+  
+  .priority-high {
+    @apply border-l-4 border-l-red-400;
+    background: linear-gradient(90deg, oklch(0.9 0.15 25) 0%, var(--card) 10%);
+  }
+  
+  .priority-urgent {
+    @apply border-l-4 border-l-red-600;
+    background: linear-gradient(90deg, oklch(0.85 0.2 20) 0%, var(--card) 10%);
+  }
+  
+  /* Priority text colors */
+  .text-priority-low {
+    @apply text-green-600;
+  }
+  
+  .text-priority-medium {
+    @apply text-yellow-600;
+  }
+  
+  .text-priority-high {
+    @apply text-red-600;
+  }
+  
+  .text-priority-urgent {
+    @apply text-red-700;
+  }
+  
+  /* Completion states */
+  .task-completed {
+    @apply opacity-75;
+    background: linear-gradient(135deg, oklch(0.95 0.02 140), var(--card));
+    cursor: default;
+  }
+  
+  .task-completed:hover {
+    cursor: pointer;
+  }
+  
+  /* Checkbox styling */
+  input[type="checkbox"] {
+    @apply cursor-pointer w-5 h-5 accent-primary;
+  }
+  
+  input[type="checkbox"]:hover {
+    @apply scale-110;
+    cursor: pointer;
+  }
+  
+  /* Icon hover effects */
+  .icon, svg, [data-icon] {
+    @apply transition-all duration-200 ease-in-out cursor-pointer;
+  }
+  
+  .icon:hover, svg:hover, [data-icon]:hover {
+    @apply scale-110;
+    color: var(--primary);
+    cursor: pointer;
+  }
+  
+  /* Add some beautiful gradients for primary elements */
+  .primary-gradient {
+    background: linear-gradient(135deg, var(--primary), oklch(from var(--primary) calc(l + 0.1) calc(c + 0.05) calc(h + 30)));
+  }
+  
+  .secondary-gradient {
+    background: linear-gradient(135deg, var(--secondary), oklch(from var(--secondary) calc(l + 0.05) calc(c + 0.02) calc(h + 15)));
+  }
+  
+  .accent-gradient {
+    background: linear-gradient(135deg, var(--accent), oklch(from var(--accent) calc(l + 0.08) calc(c + 0.03) calc(h + 20)));
+  }
+}

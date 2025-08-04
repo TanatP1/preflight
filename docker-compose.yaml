@@ -1,0 +1,48 @@
+name: ${PROJECT_NAME}
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: ${PROJECT_NAME}-db
+    restart: always
+    volumes:
+      - pf-data:/var/lib/postgresql/data
+      - ./_entrypoint:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_APP_USER=${POSTGRES_APP_USER}
+      - POSTGRES_APP_PASSWORD=${POSTGRES_APP_PASSWORD}
+    networks:
+      - pf-net
+
+  # Remove backend service since Next.js handles both frontend and backend
+  # backend:
+  #   ... (commented out)
+
+  frontend:
+    depends_on:
+      - postgres  # Changed from 'backend' to 'postgres'
+    image: ${FRONTEND_IMAGE_NAME}
+    container_name: ${PROJECT_NAME}-frontend
+    restart: always
+    ports:
+      - "${FRONTEND_PORT}:3000"  # Fixed: Map to internal port 3000
+    networks:
+      - pf-net
+    environment:
+      # Database connection for Next.js
+      - DATABASE_URL=postgresql://${POSTGRES_APP_USER}:${POSTGRES_APP_PASSWORD}@${PROJECT_NAME}-db:5432/${POSTGRES_DB}
+      - NODE_ENV=production
+      # Remove nginx-specific variables since we're not using nginx proxy
+      # - NGINX_PROXY=http://${PROJECT_NAME}-backend:3000
+      # - NGINX_PORT=${FRONTEND_PORT}
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  pf-data:
+    name: ${PROJECT_NAME}-pf-data
+networks:
+  pf-net:
+    name: ${PROJECT_NAME}-pf-net
