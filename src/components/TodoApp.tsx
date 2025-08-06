@@ -18,24 +18,30 @@ export function TodoApp() {
 
   // Fetch tasks from database
   const fetchTasks = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/tasks');
-      if (!response.ok) throw new Error('Failed to fetch tasks');
-      const data = await response.json();
-      setTasks(data.map((task: any) => ({
-        ...task,
-        dueDate: task.dueDate ? new Date(task.dueDate) : null,
-        dueTime: task.dueTime ? new Date(task.dueTime) : null,
-        createdAt: new Date(task.createdAt),
-        updatedAt: new Date(task.updatedAt)
-      })));
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-    } finally {
-      setLoading(false);
+  try {
+    setLoading(true);
+    const response = await fetch('/api/tasks');
+    
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('API Error Response:', text);
+      throw new Error(`Failed to fetch tasks: ${response.status}`);
     }
-  };
+    
+    const data = await response.json();
+    setTasks(data.map((task: any) => ({
+      ...task,
+      dueDate: task.dueDate ? new Date(task.dueDate) : null,
+      dueTime: task.dueTime ? new Date(task.dueTime) : null,
+      createdAt: new Date(task.createdAt),
+      updatedAt: new Date(task.updatedAt)
+    })));
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Load tasks on component mount
   useEffect(() => {
@@ -43,33 +49,38 @@ export function TodoApp() {
   }, []);
 
   const addTask = async (taskData: Omit<Task, 'id' | 'isCompleted' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(taskData),
-      });
+  try {
+    const response = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(taskData),
+    });
 
-      if (!response.ok) throw new Error('Failed to create task');
-      
-      const newTask = await response.json();
-      setTasks(prev => [
-        {
-          ...newTask,
-          dueDate: newTask.dueDate ? new Date(newTask.dueDate) : null,
-          dueTime: newTask.dueTime ? new Date(newTask.dueTime) : null,
-          createdAt: new Date(newTask.createdAt),
-          updatedAt: new Date(newTask.updatedAt)
-        },
-        ...prev
-      ]);
-      setShowForm(false);
-    } catch (error) {
-      console.error('Error creating task:', error);
+    if (!response.ok) {
+      // Log the response for debugging
+      const text = await response.text();
+      console.error('API Error Response:', text);
+      throw new Error(`Failed to create task: ${response.status}`);
     }
-  };
+    
+    const newTask = await response.json();
+    setTasks(prev => [
+      {
+        ...newTask,
+        dueDate: newTask.dueDate ? new Date(newTask.dueDate) : null,
+        dueTime: newTask.dueTime ? new Date(newTask.dueTime) : null,
+        createdAt: new Date(newTask.createdAt),
+        updatedAt: new Date(newTask.updatedAt)
+      },
+      ...prev
+    ]);
+    setShowForm(false);
+  } catch (error) {
+    console.error('Error creating task:', error);
+  }
+};
 
   const updateTask = async (id: string, updates: Partial<Task>) => {
     try {

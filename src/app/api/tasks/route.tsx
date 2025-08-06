@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { title, dueDate, dueTime, priority, link } = body;
-
+    console.log('POST request body:', body); // <- Add just this line
     // Validate required fields
     if (!title) {
       return NextResponse.json(

@@ -91,7 +91,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    
+
     // Check if task exists
     const existingTask = await prisma.task.findUnique({
       where: { id },

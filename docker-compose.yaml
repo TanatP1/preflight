@@ -4,6 +4,8 @@ services:
     image: postgres:17-alpine
     container_name: ${PROJECT_NAME}-db
     restart: always
+    ports:
+    - "5417:5432"  # ← Add this line
     volumes:
       - pf-data:/var/lib/postgresql/data
       - ./_entrypoint:/docker-entrypoint-initdb.d
@@ -21,6 +23,7 @@ services:
   #   ... (commented out)
 
   frontend:
+# Add user: "0:0" here to run as root for quick permission fix if needed
     depends_on:
       - postgres  # Changed from 'backend' to 'postgres'
     image: ${FRONTEND_IMAGE_NAME}
