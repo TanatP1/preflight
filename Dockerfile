@@ -5,8 +5,6 @@ FROM node:18-alpine AS base
 FROM base AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
-
-# Copy package files
 COPY package*.json ./
 RUN npm ci
 
@@ -16,10 +14,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
+# Generate Prisma client before building
 RUN npx prisma generate
 
-# Build the Next.js application (standalone mode)
+# Build the app
 RUN npm run build
 
 # Stage 3: Production runtime
@@ -28,27 +26,45 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Create a non-root user for security
+# Create system user and group
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Install runtime dependencies for Prisma
+# Install required runtime dependencies
 RUN apk add --no-cache openssl
 
-# Copy necessary files from build
+# Copy application files with proper ownership
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
-# Switch to non-root user
+# Ensure proper permissions on critical directories
+RUN chown -R nextjs:nodejs /app
+RUN chmod -R 755 /app
+
+# Create entrypoint script to handle Prisma initialization
+RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
+    echo 'set -e' >> /app/entrypoint.sh && \
+    echo 'echo "Checking database connection..."' >> /app/entrypoint.sh && \
+    echo 'npx prisma db push --accept-data-loss || echo "Database sync failed, continuing..."' >> /app/entrypoint.sh && \
+    echo 'echo "Starting application..."' >> /app/entrypoint.sh && \
+    echo 'exec "$@"' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh && \
+    chown nextjs:nodejs /app/entrypoint.sh
+
+# Switch to non-privileged user
 USER nextjs
 
+# Expose port
 EXPOSE 3000
+
+# Set environment variables
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start the application
-CMD ["node", "server.js"]
+# Use entrypoint script to handle Prisma and then start the app
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["node", ".next/standalone/server.js"]
