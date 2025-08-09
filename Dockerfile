@@ -45,17 +45,15 @@ COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 RUN chown -R nextjs:nodejs /app
 RUN chmod -R 755 /app
 
-# Create app entrypoint script (renamed to avoid conflict with _entrypoint dir)
-RUN echo '#!/bin/sh' > /app/app-entrypoint.sh && \
-    echo 'set -e' >> /app/app-entrypoint.sh && \
-    echo 'echo "Waiting for database to be ready..."' >> /app/app-entrypoint.sh && \
-    echo 'sleep 10' >> /app/app-entrypoint.sh && \
-    echo 'echo "Running Prisma database sync..."' >> /app/app-entrypoint.sh && \
-    echo 'npx prisma db push --accept-data-loss || echo "Database sync failed, continuing..."' >> /app/app-entrypoint.sh && \
-    echo 'echo "Starting Next.js application..."' >> /app/app-entrypoint.sh && \
-    echo 'exec "$@"' >> /app/app-entrypoint.sh && \
-    chmod +x /app/app-entrypoint.sh && \
-    chown nextjs:nodejs /app/app-entrypoint.sh
+# Create entrypoint script to handle Prisma initialization
+RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
+    echo 'set -e' >> /app/entrypoint.sh && \
+    echo 'echo "Checking database connection..."' >> /app/entrypoint.sh && \
+    echo 'npx prisma db push --accept-data-loss || echo "Database sync failed, continuing..."' >> /app/entrypoint.sh && \
+    echo 'echo "Starting application..."' >> /app/entrypoint.sh && \
+    echo 'exec "$@"' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh && \
+    chown nextjs:nodejs /app/entrypoint.sh
 
 # Switch to non-privileged user
 USER nextjs
@@ -67,6 +65,6 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Use renamed entrypoint script to avoid conflict with _entrypoint directory
-ENTRYPOINT ["/app/app-entrypoint.sh"]
-CMD ["node", "server.js"]
+# Use entrypoint script to handle Prisma and then start the app
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["node", ".next/standalone/server.js"]
