@@ -32,3 +32,12 @@
 **/values.dev.yaml
 LICENSE
 README.md
+
+# Additional exclusions for Next.js
+**/.next/
+**/out/
+**/logs/
+**/*.log
+
+# Keep _entrypoint directory - it's needed for PostgreSQL initialization in docker-compose
+# The _entrypoint directory is intentionally NOT excluded so it's available for PostgreSQL init
