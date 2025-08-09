@@ -1,3 +1,4 @@
+
 # Multi-stage build for production optimization
 FROM node:18-alpine AS base
 
@@ -33,10 +34,9 @@ RUN adduser --system --uid 1001 nextjs
 # Install required runtime dependencies
 RUN apk add --no-cache openssl
 
-# Copy application files with proper ownership
+# Copy application files with proper ownership - using standard Next.js build
 COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
@@ -67,4 +67,4 @@ ENV HOSTNAME="0.0.0.0"
 
 # Use entrypoint script to handle Prisma and then start the app
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["node", ".next/standalone/server.js"]
+CMD ["npm", "start"]
