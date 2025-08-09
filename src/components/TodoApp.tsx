@@ -160,7 +160,7 @@ export function TodoApp() {
             </h1>
           </div>
           <p className="text-muted-foreground text-lg">
-            G17 Stay organized and productive with smart task management
+            Stay organized and productive with smart task management
           </p>
           <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <span>{totalCount} total tasks</span>
